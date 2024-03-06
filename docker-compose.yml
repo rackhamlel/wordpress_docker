@@ -1,0 +1,75 @@
+version: "3.3"
+
+# Déclaration des services à utiliser
+services:
+
+  # Container avec Wordpress
+  wordpress:
+
+    image: wordpress
+    restart: always
+
+    ports:
+    # La machine locale ouvre le port 8080
+      - 8080:80
+    # Dépendace du container Wordpress avec le container db
+    
+    
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: root
+      WORDPRESS_DB_PASSWORD: azertysio
+      WORDPRESS_DB_NAME: Wordpress
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - db
+
+
+  # Container avec MariaDb
+  db:
+  # Quelle image utiliser
+    image: mariadb
+    # comportement en cas de plantage
+    restart: always
+
+    # variable d'environnement
+    environment:
+    # Mot de passe l'utilisateur root
+      MARIADB_ROOT_PASSWORD: azertysio
+    # port du db
+    ports:
+      - 3308:3306
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8089:8080
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: always
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+  phpmyadmin:
+    image: phpmyadmin
+    # comportement en cas de plantage
+    restart: always
+
+    environment:
+      # hote de connection
+      PMA_HOST: db
+
+      # utilisateur pour ce connecter a phpmyadmin
+      #PMA_USER: sio
+      #PMA_PASSWORD: azertysio
+    ports:
+      - 8086:80
+
+    depends_on:
+      - db
+volumes:
+  wordpress:
+  db:
